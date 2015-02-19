@@ -44,6 +44,11 @@ namespace XLabs.Forms.Mvvm
 			get;
 			set;
 		}
+        public object Model
+        {
+            get;
+            set;
+        }
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is busy.
 		/// </summary>

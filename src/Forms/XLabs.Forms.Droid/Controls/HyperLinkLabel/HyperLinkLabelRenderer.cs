@@ -14,7 +14,7 @@ namespace XLabs.Forms.Controls
 	/// <summary>
 	/// Class HyperLinkLabelRenderer.
 	/// </summary>
-	public class HyperLinkLabelRenderer : LabelRenderer
+    public class HyperLinkLabelRenderer : ExtendedLabelRender
     {
 		/// <summary>
 		/// Called when [element changed].

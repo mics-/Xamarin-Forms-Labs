@@ -109,7 +109,7 @@ namespace XLabs.Forms.Services
 
 			if (pInfo.IsAssignableFrom(xlvm) || pInfo.IsSubclassOf(typeof(ViewModel)))
 			{
-				page = ViewFactory.CreatePage(pageType);
+                page = ViewFactory.CreatePageModel(pageType, parameter);
 			}
 			else if (pInfo.IsAssignableFrom(xfPage) || pInfo.IsSubclassOf(typeof(Xamarin.Forms.Page)))
 			{

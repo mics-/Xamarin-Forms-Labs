@@ -30,6 +30,15 @@ namespace XLabs.Forms.Controls
 			base.OnElementChanged(e);
 
 			var view = (ExtendedLabel)Element;
+            var label = (UILabel)Control;
+            label.UserInteractionEnabled = true;
+            var tapXamarin = new UITapGestureRecognizer();
+            tapXamarin.AddTarget(() =>
+            {
+                if (view.Command != null)
+                    view.Command.Execute(view.CommandParameter);
+            });
+            label.AddGestureRecognizer(tapXamarin);
 
 			UpdateUi(view, Control);
 			SetPlaceholder(view);
@@ -65,6 +74,25 @@ namespace XLabs.Forms.Controls
 			{
 				SetPlaceholder(view);
 			}
+            if (e.PropertyName == ExtendedLabel.IsUnderlineProperty.PropertyName)
+            {
+
+                UpdateUi(view, Control);
+                SetPlaceholder(view);
+            }
+            if (e.PropertyName == ExtendedLabel.IsStrikeThroughProperty.PropertyName)
+            {
+
+                UpdateUi(view, Control);
+                SetPlaceholder(view);
+            }
+            if (e.PropertyName == ExtendedLabel.IsDropShadowProperty.PropertyName)
+            {
+
+                UpdateUi(view, Control);
+                SetPlaceholder(view);
+            }
+
 		}
 
 		/// <summary>

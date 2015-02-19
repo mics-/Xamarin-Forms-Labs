@@ -26,7 +26,7 @@ namespace XLabs.Forms.Controls
 		public ExtendedLabelRender()
 		{
 		}
-
+        bool _inited = false;
 		/// <summary>
 		/// Called when [element changed].
 		/// </summary>
@@ -37,7 +37,16 @@ namespace XLabs.Forms.Controls
 
 			var view = (ExtendedLabel)Element;
 			var control = Control;
+            if (!_inited)
+            {
+                _inited = true;
+                control.Touch += (s, ea) =>
+                {
 
+                    if (ea.Event.ActionMasked == Android.Views.MotionEventActions.Up && view.Command != null)
+                        view.Command.Execute(view.CommandParameter);
+                };
+            }
 			UpdateUi(view, control);
 
 		}

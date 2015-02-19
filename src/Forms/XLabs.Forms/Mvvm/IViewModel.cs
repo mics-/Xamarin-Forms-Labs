@@ -2,6 +2,9 @@
 
 namespace XLabs.Forms.Mvvm
 {
+    /// <summary>
+    /// IViewModel
+    /// </summary>
 	public interface IViewModel
 	{
 		/// <summary>
@@ -22,5 +25,19 @@ namespace XLabs.Forms.Mvvm
 		///   <c>true</c> if this instance is busy; otherwise, <c>false</c>.
 		/// </value>
 		bool IsBusy { get; set; }
+        /// <summary>
+        /// Model for view model
+        /// </summary>
+        object Model { get; set; }
+
+        /// <summary>
+        /// Called when the view appears.
+        /// </summary>
+        void OnViewAppearing();
+
+        /// <summary>
+        /// Called when the view disappears.
+        /// </summary>
+        void OnViewDisappearing();
 	}
 }

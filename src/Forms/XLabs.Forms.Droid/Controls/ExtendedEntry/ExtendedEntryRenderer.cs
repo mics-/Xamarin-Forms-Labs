@@ -29,6 +29,8 @@ namespace XLabs.Forms.Controls
 		/// </summary>
 		private float _downX, _downY, _upX, _upY;
 
+
+        Android.Text.InputTypes defaultType;
 		/// <summary>
 		/// Called when [element changed].
 		/// </summary>
@@ -44,6 +46,8 @@ namespace XLabs.Forms.Controls
 			//SetBorder(view);
 			SetPlaceholderTextColor(view);
             SetMaxLength(view);
+
+            SetPass(view);
 
 			if (e.NewElement == null)
 			{
@@ -131,8 +135,24 @@ namespace XLabs.Forms.Controls
 			//    SetBorder(view);
 			if (e.PropertyName == ExtendedEntry.PlaceholderTextColorProperty.PropertyName)
 				SetPlaceholderTextColor(view);
-		}
 
+            if (e.PropertyName == ExtendedEntry.IsPasswordProperty.PropertyName || e.PropertyName == ExtendedEntry.TextProperty.PropertyName )
+                SetPass(view);
+
+
+		}
+        private void SetPass(ExtendedEntry view)
+        {
+            if (Control.InputType != (Android.Text.InputTypes.ClassText | Android.Text.InputTypes.TextVariationPassword))
+            {
+                defaultType = Control.InputType; 
+            }
+            Android.Text.InputTypes it = view.Text == String.Empty || !view.IsPassword ? defaultType : Android.Text.InputTypes.ClassText | Android.Text.InputTypes.TextVariationPassword;
+
+            if (Control.InputType != it)
+                Control.InputType = it;
+
+        }
 		/// <summary>
 		/// Sets the border.
 		/// </summary>
@@ -154,7 +174,8 @@ namespace XLabs.Forms.Controls
 					Control.Gravity = GravityFlags.CenterHorizontal;
 					break;
 				case Xamarin.Forms.TextAlignment.End:
-					Control.Gravity = GravityFlags.End;
+					//Control.Gravity = GravityFlags.End;
+                    Control.TextAlignment = Android.Views.TextAlignment.ViewEnd;
 					break;
 				case Xamarin.Forms.TextAlignment.Start:
 					Control.Gravity = GravityFlags.Start;

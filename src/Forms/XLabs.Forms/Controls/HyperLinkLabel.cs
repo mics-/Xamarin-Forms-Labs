@@ -5,7 +5,7 @@ namespace XLabs.Forms.Controls
 	/// <summary>
 	/// Class HyperLinkLabel.
 	/// </summary>
-	public class HyperLinkLabel : Label
+    public class HyperLinkLabel : ExtendedLabel
 	{
 		/// <summary>
 		/// The subject property

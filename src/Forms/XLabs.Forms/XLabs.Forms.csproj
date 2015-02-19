@@ -111,6 +111,7 @@
     <Compile Include="Mvvm\BaseView.cs" />
     <Compile Include="Mvvm\INavigationAware.cs" />
     <Compile Include="Mvvm\IPage.cs" />
+    <Compile Include="Mvvm\IBindableObject.cs" />
     <Compile Include="Mvvm\IViewModel.cs" />
     <Compile Include="Mvvm\NavigationAwareViewModel.cs" />
     <Compile Include="Mvvm\NavigationView.cs" />

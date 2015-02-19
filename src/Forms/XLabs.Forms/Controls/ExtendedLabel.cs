@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace XLabs.Forms.Controls
@@ -238,5 +239,41 @@ namespace XLabs.Forms.Controls
 			}
 		}
 
+        /// <summary>
+        /// ICommand Commandr property.
+        /// </summary>
+        public static readonly BindableProperty CommandProperty =
+            BindableProperty.Create<ExtendedLabel, ICommand>(p => p.Command, default(ICommand));
+
+        /// <summary>
+        /// Gets or sets the ICommand Command value
+        /// </summary>
+        /// <value>The placeholder FormattedString.</value>
+        public ICommand Command
+        {
+            get { return (ICommand)GetValue(CommandProperty); }
+            set
+            {
+                SetValue(CommandProperty, value);
+            }
+        }
+        /// <summary>
+        /// object CommandParameter property.
+        /// </summary>
+        public static readonly BindableProperty CommandParameterProperty =
+            BindableProperty.Create<ExtendedLabel, object>(p => p.CommandParameter, default(object));
+
+        /// <summary>
+        /// Gets or sets the object CommandParameter value
+        /// </summary>
+        /// <value>The placeholder FormattedString.</value>
+        public object CommandParameter
+        {
+            get { return (object)GetValue(CommandParameterProperty); }
+            set
+            {
+                SetValue(CommandParameterProperty, value);
+            }
+        }
 	}
 }

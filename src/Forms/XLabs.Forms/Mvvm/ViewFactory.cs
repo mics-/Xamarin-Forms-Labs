@@ -43,8 +43,8 @@ namespace XLabs.Forms.Mvvm
 		/// <summary>
 		/// The page cache.
 		/// </summary>
-		private static readonly Dictionary<string, Tuple<IViewModel, object>> PageCache =
-			new Dictionary<string, Tuple<IViewModel, object>>();
+        private static readonly Dictionary<string, Tuple<IViewModel, Page>> PageCache =
+            new Dictionary<string, Tuple<IViewModel, Page>>();
 
 		/// <summary>
 		/// Gets or sets a value indicating whether [enable cache].
@@ -84,22 +84,13 @@ namespace XLabs.Forms.Mvvm
 		/// <param name="initialiser">The initialiser.</param>
 		/// <returns>System.Object.</returns>
 		/// <exception cref="System.InvalidOperationException">Unknown View for ViewModel</exception>
-		public static object CreatePage(Type viewModelType, Action<object, object> initialiser = null)
-		{
-			Type viewType;
-
-			if (TypeDictionary.ContainsKey(viewModelType))
+        public static Page CreatePage(Type viewModelType, Action<object, object> initialiser = null, object model = null)
 			{
-				viewType = TypeDictionary[viewModelType];
-			}
-			else
-			{
-				throw new InvalidOperationException("Unknown View for ViewModel");
-			}
+            Type viewType = GetPageTypeByViewModelType(viewModelType);
 
-			object page;
-			IViewModel viewModel;
-			var pageCacheKey = string.Format("{0}:{1}", viewModelType.Name, viewType.Name);
+            Page page;
+            IViewModel viewModel;
+            var pageCacheKey = string.Format("{0}:{1}", viewModelType.Name, viewType.Name);
 
 			if (EnableCache && PageCache.ContainsKey(pageCacheKey))
 			{
@@ -111,14 +102,16 @@ namespace XLabs.Forms.Mvvm
 			{
 				viewModel = (Resolver.Resolve(viewModelType) ?? Activator.CreateInstance(viewModelType)) as IViewModel;
 
-				page = Activator.CreateInstance(viewType);
+                page = (Page)Activator.CreateInstance(viewType);
 
 				if (EnableCache)
 				{
-					PageCache[pageCacheKey] = new Tuple<IViewModel, object>(viewModel, page);
-				}
+                    PageCache[pageCacheKey] = new Tuple<IViewModel, Page>(viewModel, page);
 			}
 
+
+            }
+            viewModel.Model = model;
 			viewModel.NavigationService = Resolver.Resolve<INavigationService>();
 		
 			if (initialiser != null)
@@ -126,23 +119,25 @@ namespace XLabs.Forms.Mvvm
 				initialiser(viewModel, page);
 			}
 
-			var pageBindable = page as BindableObject;
-			if (pageBindable != null)
-			{
-				// forcing break reference on viewmodel in order to allow initializer to do its work
-				pageBindable.BindingContext = null;
-				pageBindable.BindingContext = viewModel;
-			}
-			var formsPage = page as Page;
-			if (formsPage != null) {
-				viewModel.Navigation = new ViewModelNavigation(formsPage.Navigation);
-			}
+            page.BindingContext = null;
+            page.BindingContext = viewModel;
+
+            viewModel.Navigation = new ViewModelNavigation(page.Navigation);
 
 
 			return page;
 		}
 
 		/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="viewModelType"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static Page CreatePageModel(Type viewModelType, object model = null)
+        { return CreatePage(viewModelType, null, model); }
+
+        /// <summary>
 		/// Creates the page.
 		/// </summary>
 		/// <typeparam name="TViewModel">The type of the view model.</typeparam>
@@ -150,8 +145,8 @@ namespace XLabs.Forms.Mvvm
 		/// <param name="initialiser">The create action.</param>
 		/// <returns>Page for the ViewModel.</returns>
 		/// <exception cref="System.InvalidOperationException">Unknown View for ViewModel.</exception>
-		public static object CreatePage<TViewModel, TPage>(Action<TViewModel, TPage> initialiser = null)
-			where TViewModel : class, IViewModel
+        public static TPage CreatePage<TViewModel, TPage>(Action<TViewModel, TPage> initialiser = null, object model = null)
+            where TViewModel : class, IViewModel where  TPage: Page
 		{
 			Action<object, object> i = (o1, o2) =>
 			{
@@ -161,7 +156,77 @@ namespace XLabs.Forms.Mvvm
 				}
 			};
 
-			return CreatePage(typeof (TViewModel), i);
+            var page = (TPage)CreatePage(typeof(TViewModel), i, model);
+
+            var pageBindable = page as IBindableObject;
+            if (pageBindable != null)
+            {
+                pageBindable.BindViewModel<TViewModel>();
+            }
+            return page;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <typeparam name="TPage"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static TPage CreatePageModel<TViewModel, TPage>(object model = null)
+            where TViewModel : class, IViewModel
+            where TPage : Page { return CreatePage<TViewModel, TPage>(null, model); }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <param name="initialiser"></param>
+        /// <returns></returns>
+        public static Page CreatePage<TViewModel>(Action<TViewModel, Page> initialiser = null, object model = null)
+    where TViewModel : class, IViewModel
+        {
+            Action<object, object> i = (o1, o2) =>
+            {
+                if (initialiser != null)
+                {
+                    initialiser((TViewModel)o1, (Page)o2);
+                }
+            };
+
+            var page = (Page)CreatePage(typeof(TViewModel), i, model);
+
+            var pageBindable = page as IBindableObject;
+            if (pageBindable != null)
+            {
+                pageBindable.BindViewModel<TViewModel>();
+            }
+            return page;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static Page CreatePageModel<TViewModel>(object model = null)
+   where TViewModel : class, IViewModel { return CreatePage<TViewModel>(null, model); }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="viewModelType"></param>
+        /// <returns></returns>
+        private static Type GetPageTypeByViewModelType(Type viewModelType)
+        {
+            Type viewType;
+            if (TypeDictionary.ContainsKey(viewModelType))
+            {
+                viewType = TypeDictionary[viewModelType];
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown View for ViewModel");
+            }
+            return viewType;
 		}
 	}
 }
