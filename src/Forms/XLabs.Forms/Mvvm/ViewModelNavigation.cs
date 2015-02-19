@@ -14,6 +14,12 @@ namespace XLabs.Forms.Mvvm
         /// </summary>
         readonly INavigation _implementor;
 
+        public INavigation Implementor
+        {
+            get { return _implementor; }
+        } 
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelNavigation"/> class.
         /// </summary>
